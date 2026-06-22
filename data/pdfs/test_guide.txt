@@ -1,0 +1,16 @@
+Generator Troubleshooting Guide
+
+Problem 1: Generator Won't Start
+Symptoms: Unit does not turn on when switch activated
+Cause: Electrical system needs reset
+Solution: Turn off, wait 30 seconds, turn on again
+
+Problem 2: Low Power Output
+Symptoms: Generator producing less power than rated
+Cause: Battery low or fuel issue
+Solution: Check fuel tank, replace battery if needed
+
+Problem 3: Overheating
+Symptoms: Unit becomes hot, may shut down
+Cause: Lack of ventilation
+Solution: Ensure proper airflow around unit
