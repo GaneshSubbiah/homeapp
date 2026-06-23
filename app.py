@@ -1,88 +1,73 @@
 """
-Week 4 - Streamlit Web App
-===========================
-Web interface for RAG system
+Week 4 - Generator Q&A Demo
+============================
+Simple Streamlit app
 """
 
 import streamlit as st
-import sys
 import os
-
-sys.path.insert(0, os.path.dirname(__file__))
-
-from core.vector_store import load_vectorstore
-from config import OPENAI_API_KEY
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# Page config
+st.set_page_config(
+    page_title="Generator Q&A",
+    page_icon="🤖",
+    layout="wide"
+)
 
-def format_docs(docs):
-    """Format retrieved documents"""
-    return "\n\n---\n\n".join(
-        f"Source: {doc.metadata.get('pdf_name', 'Unknown')}\n"
-        f"Page: {doc.metadata.get('page_number', 'N/A')}\n"
-        f"Content: {doc.page_content}"
-        for doc in docs
-    )
-
-
-def ask_question(question):
-    """Ask a question against PDFs"""
-    
-    vectorstore = load_vectorstore()
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
-    
-    llm = ChatOpenAI(
-        model="gpt-4o-mini",
-        api_key=OPENAI_API_KEY
-    )
-    
-    prompt = ChatPromptTemplate.from_template("""
-You are a helpful assistant. Answer the question based on the provided documents.
-
-Documents:
-{context}
-
-Question: {question}
-
-Answer:""")
-    
-    chain = (
-        {
-            "context": retriever | format_docs,
-            "question": RunnablePassthrough()
-        }
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
-    
-    return chain.invoke(question)
-
-
-# Streamlit UI
-st.set_page_config(page_title="Generator Q&A", layout="wide")
-
+# Header
 st.title("🤖 Generator Troubleshooting Q&A")
-st.write("Ask questions about generator maintenance and troubleshooting")
+st.write("Your Week 4 RAG System - Live on Streamlit Cloud!")
 
-# Input
-question = st.text_input("❓ Ask a question:", placeholder="e.g., How to fix a generator that won't start?")
-
-# Answer
-if question:
-    with st.spinner("🤔 Thinking..."):
-        try:
-            answer = ask_question(question)
-            st.success("✅ Answer:")
-            st.write(answer)
-        except Exception as e:
-            st.error(f"❌ Error: {str(e)}")
+# Check API Key
+openai_key = os.getenv("OPENAI_API_KEY")
 
 st.divider()
-st.markdown("**Built with:** LangChain | OpenAI | ChromaDB | Streamlit")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("📋 System Status")
+    if openai_key:
+        st.success("✅ OpenAI API Key loaded!")
+    else:
+        st.error("❌ Missing OPENAI_API_KEY")
+        st.info("Add it in Streamlit Cloud settings")
+
+with col2:
+    st.subheader("📚 About")
+    st.write("""
+    **Built with:**
+    - LangChain
+    - OpenAI GPT-4o-mini
+    - ChromaDB
+    - Streamlit
+    """)
+
+st.divider()
+
+# Demo Questions
+st.subheader("❓ Sample Questions")
+st.write("Try asking these questions:")
+st.markdown("""
+- How to fix a generator that won't start?
+- What causes overheating?
+- How to fix low power output?
+""")
+
+st.divider()
+
+# Footer
+st.markdown("""
+---
+**Status:** ✅ Live on Streamlit Cloud
+
+**Next Steps:**
+1. Add OPENAI_API_KEY to Streamlit Secrets
+2. Deploy full RAG system
+3. Share with friends!
+
+Made with ❤️ by Ganesh
+""")
